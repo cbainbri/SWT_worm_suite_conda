@@ -1,0 +1,33 @@
+# SAM model weights (large binary, download via download_models.py)
+food_analysis/segmentation/*.pth
+food_analysis/segmentation/*.pt
+
+# Data files
+data/
+*.csv
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# Environments
+.env
+.envrc
+venv/
+env/
+.venv/
+
+# IDEs
+.idea/
+.vscode/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db

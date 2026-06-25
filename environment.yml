@@ -1,0 +1,26 @@
+name: worm_suite
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.11
+  - numpy>=1.24
+  - pandas>=2.0
+  - scipy>=1.11
+  - matplotlib>=3.7
+  - seaborn>=0.13
+  - pillow>=10.0
+  - psutil>=5.9
+  - scikit-learn>=1.3
+  - tifffile>=2023.7
+  - tqdm>=4.66
+  - pip
+  - pip:
+      - opencv-python>=4.8
+      - imagecodecs>=2023.7
+      - PyQt5>=5.15
+      - segment-anything @ git+https://github.com/facebookresearch/segment-anything.git@dca509fe793f601edb92606367a655c15ac00fdf
+      # torch/torchvision installed by setup.py based on detected GPU
+      # CPU:    pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
+      # NVIDIA: pip install torch torchvision --index-url https://download.pytorch.org/whl/cu121
+      # AMD:    pip install torch torchvision --index-url https://download.pytorch.org/whl/rocm6.2
