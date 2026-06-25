@@ -7,7 +7,12 @@ Runs natively on Windows, Mac, and Linux using an isolated micromamba environmen
 
 ## Quick Start
 
-### First time only
+### Clone (first time)
+```
+git clone --recurse-submodules https://github.com/cbainbri/SWT_worm_suite_conda.git
+```
+
+### Install (first time only)
 ```
 python setup.py
 ```
@@ -47,6 +52,17 @@ Opens a window, detects your GPU, then installs micromamba, creates the isolated
 | `merge_files.py` | Convert wide-format opto CSVs to long-format composite |
 | `bootstrap_opto.py` | Decay-recovery curve fitting with bootstrap bagging |
 | `graph_viewer_opto.py` | Visualize bootstrap results |
+
+---
+
+## Updating the analysis scripts
+
+The `tracking/`, `food_analysis/`, and `opto_analysis/` directories are git submodules pointing to their own source repos. To pull the latest changes from all three at once:
+
+```
+git submodule update --remote
+git commit -m "update submodules"
+```
 
 ---
 
