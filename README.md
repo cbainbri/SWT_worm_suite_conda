@@ -57,7 +57,13 @@ Opens a window, detects your GPU, then installs micromamba, creates the isolated
 
 ## Updating the analysis scripts
 
-The `tracking/`, `food_analysis/`, and `opto_analysis/` directories are git submodules pointing to their own source repos. To pull the latest changes from all three at once:
+The `tracking/`, `food_analysis/`, and `opto_analysis/` directories are git submodules pointing to their own source repos. To pull the latest scripts from all three at once, run:
+
+```
+python update.py
+```
+
+This fetches the latest commits from each source repo and records the update. You can also run the git command directly:
 
 ```
 git submodule update --remote
