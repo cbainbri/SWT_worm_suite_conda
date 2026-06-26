@@ -1,7 +1,7 @@
 # SWT Worm Suite — Local (conda)
 
 Unified analysis suite for C. elegans tracking, food encounter analysis, and optogenetics experiments.
-Runs natively on Windows, Mac, and Linux using an isolated micromamba environment — no Docker, no browser, full access to all drives and USB storage.
+Runs natively on Windows, Mac, and Linux using an isolated conda environment — no Docker, no browser, full access to all drives and USB storage.
 
 ---
 
@@ -13,14 +13,29 @@ git clone --recurse-submodules https://github.com/cbainbri/SWT_worm_suite_conda.
 ```
 
 ### Install (first time only)
+
+**Windows** — double-click `windows_setup.bat`
+
+> No prerequisites. If Miniconda is not already installed, `windows_setup.bat` downloads and installs it automatically (~100 MB, one-time). It then opens the setup wizard to configure your environment.
+>
+> **Note:** Windows has a known issue where typing `python` in a plain Command Prompt opens the Microsoft Store instead of running Python. The `.bat` launchers in this project bypass that problem entirely — you never need to type `python` in a terminal on Windows.
+
+**Mac / Linux** — run in a terminal:
 ```
-python setup.py
+python3 setup.py
 ```
-Opens a window, detects your GPU, then installs micromamba, creates the isolated `worm_suite` environment, and downloads the SAM model weights (~1.2 GB). Takes 10–20 minutes.
+Opens a window, detects your GPU, then installs micromamba, creates the isolated `worm_suite` environment, and downloads the SAM model weights (~1.2 GB). Takes 10–20 minutes on first run.
+
+A confirmation dialog appears when setup completes successfully.
 
 ### Every launch after that
-**Windows:** double-click `launch.bat`
-**Mac/Linux:** `./launch.sh`  or  `python3 start.py`
+
+**Windows:** double-click `windows_launch.bat`
+
+**Mac/Linux:**
+```
+python3 launch.py
+```
 
 ---
 
@@ -63,7 +78,7 @@ The `tracking/`, `food_analysis/`, and `opto_analysis/` directories are git subm
 python update.py
 ```
 
-This fetches the latest commits from each source repo and records the update. You can also run the git command directly:
+Or run the git command directly:
 
 ```
 git submodule update --remote
@@ -72,7 +87,7 @@ git commit -m "update submodules"
 
 ---
 
-## Why micromamba?
+## Why a conda environment?
 
 All scripts run through the isolated `worm_suite` conda environment — never your system Python.
 - No dependency conflicts with anything else on your machine
@@ -80,6 +95,10 @@ All scripts run through the isolated `worm_suite` conda environment — never yo
 - GPU acceleration works directly with your installed drivers
 - Works on Windows, Mac (Intel + Apple Silicon), and Linux
 
+**Windows** uses Miniconda (installed by `windows_setup.bat`) to manage the environment.
+**Mac/Linux** uses micromamba (installed automatically by `setup.py`).
+Both produce the same isolated `worm_suite` environment.
+
 ## GPU
 
-Selected during `python setup.py`. To switch GPU type later, just run `python setup.py` again — it reinstalls torch without recreating the full environment.
+Selected during setup. To switch GPU type later, just run setup again — it reinstalls torch without recreating the full environment.

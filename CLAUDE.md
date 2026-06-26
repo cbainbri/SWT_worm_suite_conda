@@ -15,6 +15,10 @@ SWT_worm_suite/
 ├── download_models.py      downloads sam_vit_l_0b3195.pth (~1.2GB) into food_analysis/segmentation/
 ├── environment.yml         conda environment (all deps, cross-platform)
 ├── requirements.txt        pip fallback
+├── windows_setup.bat       Windows-only: bootstraps Miniconda if needed, then runs setup.py
+├── windows_launch.bat      Windows-only: launches via conda run (bypasses MS Store Python stub)
+├── setup.py                Mac/Linux setup: installs micromamba, creates worm_suite env, downloads SAM
+├── launch.py               Mac/Linux launcher: delegates to start.py
 ├── Dockerfile              noVNC container build (Linux desktop in browser at localhost:6080)
 ├── docker-compose.yml      one-command container launch
 └── README.md
@@ -41,6 +45,10 @@ SWT_worm_suite/
 
 ### Not Started
 - [x] Test launcher on Windows — accordion UI confirmed working
+- [x] windows_setup.bat — bootstraps Miniconda on Windows (no prerequisites), then runs setup.py
+- [x] windows_launch.bat — bypasses MS Store Python stub using conda run (renamed from launch.bat)
+- [x] launch.py — Mac/Linux launcher replacing launch.sh
+- [x] setup.py success/failure confirmation dialogs added
 - [x] setup.py — Tkinter GUI, auto-detects GPU, writes .env, kicks off docker compose
 - [x] docker-compose.nvidia.yml — NVIDIA GPU passthrough override
 - [x] docker-compose.amd.yml — AMD ROCm device passthrough override

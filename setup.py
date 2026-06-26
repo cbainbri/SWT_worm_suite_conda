@@ -15,7 +15,7 @@ import tarfile
 import urllib.request
 from pathlib import Path
 import tkinter as tk
-from tkinter import ttk
+from tkinter import messagebox, ttk
 
 SUITE_DIR = Path(__file__).resolve().parent
 ENV_NAME  = "worm_suite"
@@ -275,6 +275,9 @@ def run_install(gpu: str):
         )
         if result.returncode != 0:
             print("\nEnvironment creation failed — check output above.")
+            _root = tk.Tk(); _root.withdraw()
+            messagebox.showerror("Setup Failed", "Environment creation failed.\nCheck the terminal for details.")
+            _root.destroy()
             sys.exit(1)
 
     print(f"\nInstalling PyTorch ({gpu}) ...")
@@ -298,8 +301,19 @@ def run_install(gpu: str):
     print("\n" + "=" * 50)
     print(f"Setup complete! (used: {tool_name})")
     print("\nTo launch:")
-    print("  Windows:    double-click launch.bat  or  python start.py")
-    print("  Mac/Linux:  ./launch.sh              or  python3 start.py")
+    print("  Windows:    double-click windows_launch.bat")
+    print("  Mac/Linux:  python3 launch.py")
+
+    _root = tk.Tk()
+    _root.withdraw()
+    messagebox.showinfo(
+        "Setup Complete — SWT Worm Suite",
+        "Installation successful!\n\n"
+        "To launch the suite:\n"
+        "  Windows:    double-click  windows_launch.bat\n"
+        "  Mac/Linux:  python3 launch.py"
+    )
+    _root.destroy()
 
 
 def main():
