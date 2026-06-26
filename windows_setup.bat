@@ -80,9 +80,47 @@ if not defined CONDA_EXE (
     echo.
 )
 
-:: ── 3. Run setup.py using the base environment's Python ───────────────────────
-echo Starting setup wizard...
-"%CONDA_EXE%" run -n base python "%~dp0setup.py"
+:: ── 3. Find a Python to run setup.py ─────────────────────────────────────────
+::
+:: Priority:
+::   a) worm_suite env already exists (re-run / partial install) -- use it
+::   b) base env has Python (Miniconda/Anaconda) -- use it
+::   c) neither (micromamba fresh install, no Python yet) -- create worm_suite
+::      from environment.yml first, then use it
+
+set RUN_ENV=
+
+:: (a) worm_suite already exists?
+"%CONDA_EXE%" env list 2>nul | findstr /C:"worm_suite" >nul
+if not errorlevel 1 (
+    set RUN_ENV=worm_suite
+    goto run_setup
+)
+
+:: (b) base env has Python?
+"%CONDA_EXE%" run -n base python --version >nul 2>&1
+if not errorlevel 1 (
+    set RUN_ENV=base
+    goto run_setup
+)
+
+:: (c) No Python anywhere -- create worm_suite first
+echo No Python found in base environment (micromamba install detected^).
+echo Creating worm_suite environment first -- this takes 5-15 minutes...
+echo.
+"%CONDA_EXE%" env create -f "%~dp0environment.yml" -y
+if errorlevel 1 (
+    echo.
+    echo Environment creation failed -- check the output above.
+    pause
+    exit /b 1
+)
+set RUN_ENV=worm_suite
+
+:run_setup
+echo.
+echo Starting setup wizard (using %RUN_ENV% environment^)...
+"%CONDA_EXE%" run -n %RUN_ENV% python "%~dp0setup.py"
 
 if errorlevel 1 (
     echo.
