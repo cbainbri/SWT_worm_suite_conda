@@ -120,12 +120,18 @@ set RUN_ENV=worm_suite
 :run_setup
 echo.
 echo Starting setup wizard (using %RUN_ENV% environment^)...
+echo (A window will appear -- keep this terminal open until setup completes^)
+echo.
 "%CONDA_EXE%" run -n %RUN_ENV% python "%~dp0setup.py"
 
 if errorlevel 1 (
     echo.
     echo Setup did not complete successfully -- check the output above.
-    pause
+) else (
+    echo.
+    echo Setup finished.
 )
 
+echo.
+pause
 endlocal
