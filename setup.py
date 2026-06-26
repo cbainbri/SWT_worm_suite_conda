@@ -294,8 +294,8 @@ def run_install(gpu: str):
     print("\nDownloading SAM model weights (~1.2 GB) ...")
     subprocess.run(
         [str(tool_path), "run", "-n", ENV_NAME,
-         "python", str(SUITE_DIR / "download_models.py")],
-        cwd=str(SUITE_DIR), check=True
+         "python", str(SUITE_DIR / "food_analysis" / "download_models.py")],
+        cwd=str(SUITE_DIR / "food_analysis"), check=True
     )
 
     print("\n" + "=" * 50)
