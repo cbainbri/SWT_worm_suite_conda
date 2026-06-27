@@ -21,6 +21,20 @@ git clone --recurse-submodules https://github.com/cbainbri/SWT_worm_suite_conda.
 > **Note:** Windows has a known issue where typing `python` in a plain Command Prompt opens the Microsoft Store instead of running Python. The `.bat` launchers in this project bypass that problem entirely — you never need to type `python` in a terminal on Windows.
 
 **Mac / Linux** — run in a terminal:
+
+> **Python / Tkinter prerequisites**
+>
+> **Mac:** The system Python shipped with macOS does not include Tkinter. Install Python from [python.org](https://python.org) (the standard installer bundles Tkinter), or install Tkinter separately via your package manager (e.g. `brew install python-tk`).
+>
+> **Linux:** Tkinter is often packaged separately from Python. Install it before running setup:
+> ```bash
+> # Debian / Ubuntu
+> sudo apt install python3-tk
+>
+> # Fedora / RHEL
+> sudo dnf install python3-tkinter
+> ```
+
 ```
 python3 setup.py
 ```
