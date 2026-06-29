@@ -24,27 +24,65 @@ if os.environ.get("CONDA_DEFAULT_ENV") != "worm_suite":
         _r.destroy()
         sys.exit(1)
 
-def _maybe_set_hsa_override():
-    """Probe GPU compute; if kernels fail (RDNA3 GFX mismatch), set the
-    HSA_OVERRIDE_GFX_VERSION env var so child processes inherit it before
-    their own torch/HSA context is initialised."""
+_GPU_CACHE = Path(__file__).resolve().parent / '.gpu_config'
+# GFX versions compiled into PyTorch ROCm wheels, newest first
+_GFX_CANDIDATES = ['11.0.0', '10.3.0', '9.4.0', '9.0.10', '9.0.6']
+_GPU_PROBE = (
+    'import torch; t=torch.zeros(1,device="cuda"); '
+    'assert (t+1).item()==1.0'
+)
+
+def _probe_gfx(ver: str | None) -> bool:
+    """Run _GPU_PROBE in a subprocess with HSA_OVERRIDE_GFX_VERSION=ver."""
+    import subprocess
+    env = os.environ.copy()
+    if ver:
+        env['HSA_OVERRIDE_GFX_VERSION'] = ver
+    else:
+        env.pop('HSA_OVERRIDE_GFX_VERSION', None)
+    r = subprocess.run([sys.executable, '-c', _GPU_PROBE],
+                       env=env, capture_output=True, timeout=20)
+    return r.returncode == 0
+
+def _set_hsa_override():
+    """Detect the HSA_OVERRIDE_GFX_VERSION needed for this GPU and set it in
+    os.environ so every child process inherits it with a fresh HSA context.
+    Result is cached in .gpu_config; probe only runs when cache is missing."""
     if 'HSA_OVERRIDE_GFX_VERSION' in os.environ:
         return
+
+    # Read cache
+    cached = None
+    if _GPU_CACHE.exists():
+        cached = _GPU_CACHE.read_text().strip()
+        if cached == 'none':
+            return  # previously confirmed: no override needed
+        os.environ['HSA_OVERRIDE_GFX_VERSION'] = cached
+        return
+
+    # No cache — probe (runs once, takes a few seconds)
     try:
         import torch
         if not torch.cuda.is_available():
             return
         if 'nvidia' in torch.cuda.get_device_name(0).lower():
             return
-        try:
-            t = torch.zeros(1, device='cuda')
-            _ = t + 1
-        except RuntimeError:
-            os.environ['HSA_OVERRIDE_GFX_VERSION'] = '11.0.0'
     except Exception:
-        pass
+        return
 
-_maybe_set_hsa_override()
+    # Try without override first
+    if _probe_gfx(None):
+        _GPU_CACHE.write_text('none')
+        return
+
+    # Try each GFX version until one works
+    for ver in _GFX_CANDIDATES:
+        if _probe_gfx(ver):
+            os.environ['HSA_OVERRIDE_GFX_VERSION'] = ver
+            _GPU_CACHE.write_text(ver)
+            return
+
+_set_hsa_override()
 
 import subprocess
 from pathlib import Path
