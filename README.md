@@ -24,7 +24,10 @@ git clone --recurse-submodules https://github.com/cbainbri/SWT_worm_suite_conda.
 
 > **Python / Tkinter prerequisites**
 >
-> **Mac:** The system Python shipped with macOS does not include Tkinter. Install Python from [python.org](https://python.org) (the standard installer bundles Tkinter), or install Tkinter separately via your package manager (e.g. `brew install python-tk`).
+> **Mac:** The system Python shipped with macOS does not include Tkinter. Install Python from [python.org](https://python.org) (the standard installer bundles Tkinter), or install Tkinter separately via Homebrew:
+> ```bash
+> brew install python-tk
+> ```
 >
 > **Linux:** Tkinter is often packaged separately from Python. Install it before running setup:
 > ```bash
