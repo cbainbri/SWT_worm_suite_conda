@@ -24,6 +24,28 @@ if os.environ.get("CONDA_DEFAULT_ENV") != "worm_suite":
         _r.destroy()
         sys.exit(1)
 
+def _maybe_set_hsa_override():
+    """Probe GPU compute; if kernels fail (RDNA3 GFX mismatch), set the
+    HSA_OVERRIDE_GFX_VERSION env var so child processes inherit it before
+    their own torch/HSA context is initialised."""
+    if 'HSA_OVERRIDE_GFX_VERSION' in os.environ:
+        return
+    try:
+        import torch
+        if not torch.cuda.is_available():
+            return
+        if 'nvidia' in torch.cuda.get_device_name(0).lower():
+            return
+        try:
+            t = torch.zeros(1, device='cuda')
+            _ = t + 1
+        except RuntimeError:
+            os.environ['HSA_OVERRIDE_GFX_VERSION'] = '11.0.0'
+    except Exception:
+        pass
+
+_maybe_set_hsa_override()
+
 import subprocess
 from pathlib import Path
 import tkinter as tk
