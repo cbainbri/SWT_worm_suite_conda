@@ -35,6 +35,32 @@ git clone --recurse-submodules https://github.com/cbainbri/SWT_worm_suite_conda.
 > sudo dnf install python3-tkinter
 > ```
 
+> **AMD GPU (ROCm) — Linux only — install before running setup**
+>
+> ROCm must be on your system before `setup.py` runs, otherwise the AMD GPU option won't work. Skip this if you have NVIDIA, Apple Silicon, or no GPU.
+>
+> **Ubuntu / Debian:**
+> ```bash
+> sudo apt update
+> wget https://repo.radeon.com/amdgpu-install/latest/ubuntu/jammy/amdgpu-install_6.2.60200-1_all.deb
+> sudo apt install ./amdgpu-install_6.2.60200-1_all.deb
+> sudo amdgpu-install --usecase=rocm
+> sudo usermod -a -G render,video $USER
+> # Log out and back in, then verify:
+> rocm-smi
+> ```
+>
+> **Fedora / RHEL:**
+> ```bash
+> sudo dnf install https://repo.radeon.com/amdgpu-install/latest/rhel/9.4/amdgpu-install-6.2.60200-1.el9.noarch.rpm
+> sudo amdgpu-install --usecase=rocm
+> sudo usermod -a -G render,video $USER
+> # Log out and back in, then verify:
+> rocm-smi
+> ```
+>
+> For current ROCm install instructions see: https://rocm.docs.amd.com/en/latest/deploy/linux/
+
 ```
 python3 setup.py
 ```
@@ -124,29 +150,8 @@ Drivers installed normally via your OS or nvidia.com. `setup.py` handles the res
 No extra steps — Metal is built into macOS.
 
 ### AMD (ROCm) — Linux only
-> **ROCm is not part of Mesa.** Mesa handles display/rendering and is already on your system. ROCm is a separate compute stack that must be installed manually before running setup.
+Install ROCm before running setup — see the [AMD GPU prerequisite block](#install-first-time-only) in the Install section above. After ROCm is installed, run `python3 setup.py` and select **AMD GPU (ROCm)**. PyTorch exposes ROCm through the same CUDA API — `torch.cuda.is_available()` returns `True` on a working ROCm system.
 
-**Ubuntu / Debian:**
-```bash
-sudo apt update
-wget https://repo.radeon.com/amdgpu-install/latest/ubuntu/jammy/amdgpu-install_6.2.60200-1_all.deb
-sudo apt install ./amdgpu-install_6.2.60200-1_all.deb
-sudo amdgpu-install --usecase=rocm
-sudo usermod -a -G render,video $USER
-# Log out and back in, then verify:
-rocm-smi
-```
-
-**Fedora / RHEL:**
-```bash
-sudo dnf install https://repo.radeon.com/amdgpu-install/latest/rhel/9.4/amdgpu-install-6.2.60200-1.el9.noarch.rpm
-sudo amdgpu-install --usecase=rocm
-sudo usermod -a -G render,video $USER
-# Log out and back in, then verify:
-rocm-smi
-```
-
-After ROCm is installed, run `python3 setup.py` and select **AMD GPU (ROCm)**. PyTorch exposes ROCm through the same CUDA API — `torch.cuda.is_available()` returns `True` on a working ROCm system.
+> ROCm is not part of Mesa. Mesa handles display/rendering and is already on your system. ROCm is a separate compute stack.
 
 AMD GPU is **not supported on macOS** — select CPU instead.
-For current ROCm install instructions see: https://rocm.docs.amd.com/en/latest/deploy/linux/
