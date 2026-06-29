@@ -28,7 +28,7 @@ if os.environ.get("CONDA_DEFAULT_ENV") != "worm_suite":
 
 _GPU_CACHE = Path(__file__).resolve().parent / '.gpu_config'
 # GFX versions compiled into PyTorch ROCm wheels, newest first
-_GFX_CANDIDATES = ['11.0.0', '10.3.0', '9.4.0', '9.0.10', '9.0.6']
+_GFX_CANDIDATES = ['11.0.2', '11.0.0', '10.3.0', '9.4.0', '9.0.10', '9.0.6']
 _GPU_PROBE = (
     'import torch; t=torch.zeros(1,device="cuda"); '
     'assert (t+1).item()==1.0'
@@ -61,22 +61,18 @@ def _set_hsa_override():
         os.environ['HSA_OVERRIDE_GFX_VERSION'] = cached
         return
 
-    # No cache — probe (runs once, takes a few seconds)
-    try:
-        import torch
-        if not torch.cuda.is_available():
-            return
-        if 'nvidia' in torch.cuda.get_device_name(0).lower():
-            return
-    except Exception:
-        return
+    # No cache — probe (runs once, takes a few seconds).
+    # Do NOT check torch.cuda.is_available() here: AMD RDNA3 (gfx1102) and
+    # other GFX versions not natively in the ROCm PyTorch wheel report
+    # is_available()=False until HSA_OVERRIDE_GFX_VERSION is set, so checking
+    # first causes a premature bail-out and the override is never applied.
 
-    # Try without override first
+    # Try without override first (works for NVIDIA and natively-supported AMD)
     if _probe_gfx(None):
         _GPU_CACHE.write_text('none')
         return
 
-    # Try each GFX version until one works
+    # Try each GFX version until one works (needed for RDNA3 etc.)
     for ver in _GFX_CANDIDATES:
         if _probe_gfx(ver):
             os.environ['HSA_OVERRIDE_GFX_VERSION'] = ver
