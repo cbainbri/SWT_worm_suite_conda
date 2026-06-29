@@ -3,8 +3,28 @@
 SWT Worm Suite — Unified Launcher
 Run: python launcher.py
 """
-import subprocess
+import os
 import sys
+
+# Self-re-exec into the worm_suite conda environment if not already there.
+# os.execvp replaces this process in-place — no double window.
+if os.environ.get("CONDA_DEFAULT_ENV") != "worm_suite":
+    import shutil
+    _tool = shutil.which("micromamba") or shutil.which("conda") or shutil.which("mamba")
+    if _tool:
+        os.execvp(_tool, [_tool, "run", "-n", "worm_suite", "python"] + sys.argv)
+    else:
+        import tkinter as tk
+        from tkinter import messagebox
+        _r = tk.Tk(); _r.withdraw()
+        messagebox.showerror(
+            "Environment Not Found",
+            "Could not find micromamba or conda.\n\nHave you run setup.py yet?"
+        )
+        _r.destroy()
+        sys.exit(1)
+
+import subprocess
 from pathlib import Path
 import tkinter as tk
 from tkinter import ttk, messagebox
