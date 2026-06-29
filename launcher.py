@@ -108,9 +108,10 @@ CATEGORIES = [
         ("Graph Viewer",                SUITE_DIR / "food_analysis" / "graph_viewer_food.py"),
     ]),
     ("Opto Analysis", [
-        ("Merge Files",     SUITE_DIR / "opto_analysis" / "merge_files.py"),
-        ("Bootstrap",       SUITE_DIR / "opto_analysis" / "bootstrap_opto.py"),
-        ("Graph Viewer",    SUITE_DIR / "opto_analysis" / "graph_viewer_opto.py"),
+        ("Merge Files",              SUITE_DIR / "opto_analysis" / "merge_files.py"),
+        ("Bootstrap",                SUITE_DIR / "opto_analysis" / "bootstrap_opto.py"),
+        ("Bootstrap (Vectorized)",   SUITE_DIR / "opto_analysis" / "bootstrap_opto_vectorized.py"),
+        ("Graph Viewer",             SUITE_DIR / "opto_analysis" / "graph_viewer_opto.py"),
     ]),
 ]
 
