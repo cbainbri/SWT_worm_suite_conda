@@ -5,6 +5,8 @@ Run: python launcher.py
 """
 import os
 import sys
+import subprocess
+from pathlib import Path
 
 # Self-re-exec into the worm_suite conda environment if not already there.
 # os.execvp replaces this process in-place — no double window.
@@ -34,7 +36,6 @@ _GPU_PROBE = (
 
 def _probe_gfx(ver: str | None) -> bool:
     """Run _GPU_PROBE in a subprocess with HSA_OVERRIDE_GFX_VERSION=ver."""
-    import subprocess
     env = os.environ.copy()
     if ver:
         env['HSA_OVERRIDE_GFX_VERSION'] = ver
@@ -84,8 +85,6 @@ def _set_hsa_override():
 
 _set_hsa_override()
 
-import subprocess
-from pathlib import Path
 import tkinter as tk
 from tkinter import ttk, messagebox
 
