@@ -28,9 +28,9 @@ git clone --recurse-submodules https://github.com/cbainbri/SWT_worm_suite_conda.
 >
 > **Note:** Windows has a known issue where typing `python` in a plain Command Prompt opens the Microsoft Store instead of running Python. The `.bat` launchers in this project bypass that problem entirely — you never need to type `python` in a terminal on Windows.
 
-**Mac / Linux** — run in a terminal:
+**Mac / Linux prerequisites**
 
-> **Python / Tkinter prerequisites**
+> **Python / Tkinter**
 >
 > **Mac:** The system Python shipped with macOS does not include Tkinter. The simplest fix is to install Python from [python.org](https://python.org) — the installer bundles Tkinter automatically. If you prefer Homebrew, install the version that matches your Python:
 > ```bash
@@ -72,6 +72,7 @@ git clone --recurse-submodules https://github.com/cbainbri/SWT_worm_suite_conda.
 >
 > For current ROCm install instructions see: https://rocm.docs.amd.com/en/latest/deploy/linux/
 
+**Mac / Linux** — run in a terminal:
 ```
 python3 setup.py
 ```
