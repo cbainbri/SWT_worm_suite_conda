@@ -8,6 +8,14 @@ Runs natively on Windows, Mac, and Linux using an isolated conda environment —
 ## Quick Start
 
 ### Clone (first time)
+
+> **macOS only:** `git` on macOS is part of Xcode Command Line Tools. On a fresh Mac or after an OS upgrade, you may need to install CLT and accept the license before `git clone` works:
+> ```bash
+> xcode-select --install
+> sudo xcodebuild -license accept
+> ```
+> If CLT are already installed but you still see a license error, just run the `xcodebuild` line.
+
 ```
 git clone --recurse-submodules https://github.com/cbainbri/SWT_worm_suite_conda.git
 ```
@@ -24,9 +32,9 @@ git clone --recurse-submodules https://github.com/cbainbri/SWT_worm_suite_conda.
 
 > **Python / Tkinter prerequisites**
 >
-> **Mac:** The system Python shipped with macOS does not include Tkinter. Install Python from [python.org](https://python.org) (the standard installer bundles Tkinter), or install Tkinter separately via Homebrew:
+> **Mac:** The system Python shipped with macOS does not include Tkinter. The simplest fix is to install Python from [python.org](https://python.org) — the installer bundles Tkinter automatically. If you prefer Homebrew, install the version that matches your Python:
 > ```bash
-> brew install python-tk
+> brew install python-tk@3.11   # match your Python version (3.11, 3.12, etc.)
 > ```
 >
 > **Linux:** Tkinter is often packaged separately from Python. Install it before running setup:
