@@ -86,7 +86,7 @@ A confirmation dialog appears when setup completes successfully.
 
 **Mac/Linux:**
 ```
-python3 launch.py
+python3 launcher.py
 ```
 
 ---

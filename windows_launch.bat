@@ -41,7 +41,7 @@ if not defined CONDA_EXE (
 )
 
 :: ── 2. Run start.py inside the worm_suite environment ────────────────────────
-"%CONDA_EXE%" run -n worm_suite python "%~dp0start.py"
+"%CONDA_EXE%" run -n worm_suite python "%~dp0launcher.py"
 if errorlevel 1 (
     echo.
     echo Something went wrong. Make sure you ran setup.py first.

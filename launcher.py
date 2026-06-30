@@ -11,20 +11,72 @@ from pathlib import Path
 # Self-re-exec into the worm_suite conda environment if not already there.
 # os.execvp replaces this process in-place — no double window.
 if os.environ.get("CONDA_DEFAULT_ENV") != "worm_suite":
-    import shutil
-    _tool = shutil.which("micromamba") or shutil.which("conda") or shutil.which("mamba")
-    if _tool:
-        os.execvp(_tool, [_tool, "run", "-n", "worm_suite", "python"] + sys.argv)
-    else:
-        import tkinter as tk
-        from tkinter import messagebox
-        _r = tk.Tk(); _r.withdraw()
-        messagebox.showerror(
-            "Environment Not Found",
-            "Could not find micromamba or conda.\n\nHave you run setup.py yet?"
-        )
-        _r.destroy()
+    import platform, shutil
+
+    def _find_tool():
+        for name in ("micromamba", "mamba", "conda"):
+            p = shutil.which(name)
+            if p:
+                return p, name
+        home = Path.home()
+        sys_name = platform.system()
+        if sys_name == "Darwin":
+            candidates = [
+                (home / ".local" / "bin" / "micromamba",       "micromamba"),
+                (home / "micromamba" / "bin" / "micromamba",   "micromamba"),
+                (home / "mambaforge" / "bin" / "mamba",        "mamba"),
+                (home / "miniforge3"  / "bin" / "mamba",       "mamba"),
+                (Path("/opt/homebrew/bin/mamba"),               "mamba"),
+                (Path("/usr/local/bin/mamba"),                  "mamba"),
+                (home / "miniconda3"  / "bin" / "conda",       "conda"),
+                (home / "anaconda3"   / "bin" / "conda",       "conda"),
+                (home / "miniforge3"  / "bin" / "conda",       "conda"),
+                (Path("/opt/anaconda3/bin/conda"),              "conda"),
+                (Path("/opt/miniconda3/bin/conda"),             "conda"),
+            ]
+        elif sys_name == "Linux":
+            candidates = [
+                (home / ".local" / "bin" / "micromamba",       "micromamba"),
+                (home / "micromamba" / "bin" / "micromamba",   "micromamba"),
+                (home / "mambaforge" / "bin" / "mamba",        "mamba"),
+                (home / "miniforge3"  / "bin" / "mamba",       "mamba"),
+                (Path("/usr/bin/mamba"),                        "mamba"),
+                (home / "miniconda3"  / "bin" / "conda",       "conda"),
+                (home / "anaconda3"   / "bin" / "conda",       "conda"),
+                (home / "miniforge3"  / "bin" / "conda",       "conda"),
+                (Path("/usr/bin/conda"),                        "conda"),
+            ]
+        else:
+            local = Path(os.environ.get("LOCALAPPDATA", home / "AppData" / "Local"))
+            candidates = [
+                (local / "micromamba" / "micromamba.exe",        "micromamba"),
+                (home  / "micromamba" / "micromamba.exe",        "micromamba"),
+                (home  / "mambaforge" / "Scripts" / "mamba.exe", "mamba"),
+                (home  / "miniforge3" / "Scripts" / "mamba.exe", "mamba"),
+                (home  / "miniconda3" / "Scripts" / "conda.exe", "conda"),
+                (home  / "Miniconda3" / "Scripts" / "conda.exe", "conda"),
+                (home  / "anaconda3"  / "Scripts" / "conda.exe", "conda"),
+                (home  / "Anaconda3"  / "Scripts" / "conda.exe", "conda"),
+            ]
+        for path, name in candidates:
+            if path.exists():
+                return str(path), name
+        return None, None
+
+    _tool, _tool_name = _find_tool()
+
+    if not _tool:
+        print("Error: no conda tool found (micromamba, mamba, or conda).")
+        print("Run setup first:  python3 setup.py")
         sys.exit(1)
+
+    _env_check = subprocess.run([_tool, "env", "list"], capture_output=True, text=True)
+    if "worm_suite" not in _env_check.stdout:
+        print("Error: worm_suite environment not found.")
+        print("Run setup first:  python3 setup.py")
+        sys.exit(1)
+
+    os.execvp(_tool, [_tool, "run", "-n", "worm_suite", "python"] + sys.argv)
 
 _GPU_CACHE = Path(__file__).resolve().parent / '.gpu_config'
 # GFX versions compiled into PyTorch ROCm wheels, newest first
