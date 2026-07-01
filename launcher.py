@@ -159,6 +159,7 @@ CATEGORIES = [
         ("Merge Files",              SUITE_DIR / "opto_analysis" / "merge_files.py"),
         ("Bootstrap",                SUITE_DIR / "opto_analysis" / "bootstrap_opto.py"),
         ("Bootstrap (Vectorized)",   SUITE_DIR / "opto_analysis" / "bootstrap_opto_vectorized.py"),
+        ("Permutation Testing",      SUITE_DIR / "opto_analysis" / "permutation_opto.py"),
         ("Graph Viewer",             SUITE_DIR / "opto_analysis" / "graph_viewer_opto.py"),
     ]),
 ]
