@@ -11,69 +11,77 @@ from pathlib import Path
 # Self-re-exec into the worm_suite conda environment if not already there.
 # os.execvp replaces this process in-place — no double window.
 if os.environ.get("CONDA_DEFAULT_ENV") != "worm_suite":
-    import platform, shutil
+    import platform as _platform
+    import shutil as _shutil
 
-    def _find_tool():
-        for name in ("micromamba", "mamba", "conda"):
-            p = shutil.which(name)
-            if p:
-                return p, name
-        home = Path.home()
-        sys_name = platform.system()
-        if sys_name == "Darwin":
-            candidates = [
-                (home / ".local" / "bin" / "micromamba",       "micromamba"),
-                (home / "micromamba" / "bin" / "micromamba",   "micromamba"),
-                (home / "mambaforge" / "bin" / "mamba",        "mamba"),
-                (home / "miniforge3"  / "bin" / "mamba",       "mamba"),
-                (Path("/opt/homebrew/bin/mamba"),               "mamba"),
-                (Path("/usr/local/bin/mamba"),                  "mamba"),
-                (home / "miniconda3"  / "bin" / "conda",       "conda"),
-                (home / "anaconda3"   / "bin" / "conda",       "conda"),
-                (home / "miniforge3"  / "bin" / "conda",       "conda"),
-                (Path("/opt/anaconda3/bin/conda"),              "conda"),
-                (Path("/opt/miniconda3/bin/conda"),             "conda"),
-            ]
-        elif sys_name == "Linux":
-            candidates = [
-                (home / ".local" / "bin" / "micromamba",       "micromamba"),
-                (home / "micromamba" / "bin" / "micromamba",   "micromamba"),
-                (home / "mambaforge" / "bin" / "mamba",        "mamba"),
-                (home / "miniforge3"  / "bin" / "mamba",       "mamba"),
-                (Path("/usr/bin/mamba"),                        "mamba"),
-                (home / "miniconda3"  / "bin" / "conda",       "conda"),
-                (home / "anaconda3"   / "bin" / "conda",       "conda"),
-                (home / "miniforge3"  / "bin" / "conda",       "conda"),
-                (Path("/usr/bin/conda"),                        "conda"),
-            ]
-        else:
-            local = Path(os.environ.get("LOCALAPPDATA", home / "AppData" / "Local"))
-            candidates = [
-                (local / "micromamba" / "micromamba.exe",        "micromamba"),
-                (home  / "micromamba" / "micromamba.exe",        "micromamba"),
-                (home  / "mambaforge" / "Scripts" / "mamba.exe", "mamba"),
-                (home  / "miniforge3" / "Scripts" / "mamba.exe", "mamba"),
-                (home  / "miniconda3" / "Scripts" / "conda.exe", "conda"),
-                (home  / "Miniconda3" / "Scripts" / "conda.exe", "conda"),
-                (home  / "anaconda3"  / "Scripts" / "conda.exe", "conda"),
-                (home  / "Anaconda3"  / "Scripts" / "conda.exe", "conda"),
-            ]
-        for path, name in candidates:
-            if path.exists():
-                return str(path), name
-        return None, None
+    def _find_conda_tool():
+        for _t in ("micromamba", "mamba", "conda"):
+            _p = _shutil.which(_t)
+            if _p:
+                return _p
+        _home = Path.home()
+        _sys  = _platform.system()
+        _local = Path(os.environ.get("LOCALAPPDATA", _home / "AppData" / "Local"))
+        _candidates = {
+            "Windows": [
+                _local / "micromamba" / "micromamba.exe",
+                _home  / "micromamba" / "micromamba.exe",
+                _home  / "mambaforge" / "Scripts" / "mamba.exe",
+                _home  / "miniforge3" / "Scripts" / "mamba.exe",
+                _home  / "miniconda3" / "Scripts" / "conda.exe",
+                _home  / "anaconda3"  / "Scripts" / "conda.exe",
+                _home  / "Miniconda3" / "Scripts" / "conda.exe",
+                _home  / "Anaconda3"  / "Scripts" / "conda.exe",
+            ],
+            "Darwin": [
+                _home / ".local" / "bin" / "micromamba",
+                _home / "micromamba" / "bin" / "micromamba",
+                _home / "mambaforge" / "bin" / "mamba",
+                _home / "miniforge3"  / "bin" / "mamba",
+                Path("/opt/homebrew/bin/mamba"),
+                Path("/usr/local/bin/mamba"),
+                _home / "miniconda3"  / "bin" / "conda",
+                _home / "anaconda3"   / "bin" / "conda",
+                _home / "miniforge3"  / "bin" / "conda",
+                Path("/opt/anaconda3/bin/conda"),
+                Path("/opt/miniconda3/bin/conda"),
+            ],
+            "Linux": [
+                _home / ".local" / "bin" / "micromamba",
+                _home / "micromamba" / "bin" / "micromamba",
+                _home / "mambaforge" / "bin" / "mamba",
+                _home / "miniforge3"  / "bin" / "mamba",
+                Path("/usr/bin/mamba"),
+                _home / "miniconda3"  / "bin" / "conda",
+                _home / "anaconda3"   / "bin" / "conda",
+                _home / "miniforge3"  / "bin" / "conda",
+                Path("/usr/bin/conda"),
+            ],
+        }.get(_sys, [])
+        for _p in _candidates:
+            if Path(_p).exists():
+                return str(_p)
+        return None
 
-    _tool, _tool_name = _find_tool()
+    def _show_error(msg):
+        import tkinter as _tk
+        from tkinter import messagebox as _mb
+        _r = _tk.Tk(); _r.withdraw()
+        _mb.showerror("Setup Required", msg)
+        _r.destroy()
 
+    _tool = _find_conda_tool()
     if not _tool:
-        print("Error: no conda tool found (micromamba, mamba, or conda).")
-        print("Run setup first:  python3 setup.py")
+        _show_error(
+            "No conda tool found (micromamba, mamba, or conda).\n\n"
+            "Run setup.py first to set up the worm_suite environment.")
         sys.exit(1)
 
-    _env_check = subprocess.run([_tool, "env", "list"], capture_output=True, text=True)
-    if "worm_suite" not in _env_check.stdout:
-        print("Error: worm_suite environment not found.")
-        print("Run setup first:  python3 setup.py")
+    if "worm_suite" not in subprocess.run(
+            [_tool, "env", "list"], capture_output=True, text=True).stdout:
+        _show_error(
+            "The worm_suite environment has not been created yet.\n\n"
+            "Run setup.py first.")
         sys.exit(1)
 
     os.execvp(_tool, [_tool, "run", "-n", "worm_suite", "python"] + sys.argv)

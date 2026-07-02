@@ -40,13 +40,12 @@ if not defined CONDA_EXE (
     exit /b 1
 )
 
-:: ── 2. Run start.py inside the worm_suite environment ────────────────────────
+:: ── 2. Launch the suite inside the worm_suite environment ────────────────────
 "%CONDA_EXE%" run -n worm_suite python "%~dp0launcher.py"
 if errorlevel 1 (
     echo.
-    echo Something went wrong. Make sure you ran setup.py first.
-    echo If the worm_suite environment is missing, open a Miniconda Prompt and run:
-    echo   python setup.py
+    echo Something went wrong. Make sure you ran windows_setup.bat first.
+    echo If the worm_suite environment is missing, run windows_setup.bat again.
     pause
 )
 
