@@ -119,6 +119,7 @@ python3 launcher.py
 | `merge_files.py` | Convert wide-format opto CSVs to long-format composite |
 | `bootstrap_opto.py` | Decay-recovery curve fitting with bootstrap bagging |
 | `bootstrap_opto_vectorized.py` | Vectorized bootstrap (faster on large datasets) |
+| `permutation_opto.py` | Permutation testing on bootstrap results |
 | `graph_viewer_opto.py` | Visualize bootstrap results |
 
 ---
