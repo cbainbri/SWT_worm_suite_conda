@@ -98,7 +98,7 @@ python3 launcher.py
 |---|---|
 | `track_preview.py` | Tune tracking parameters on a single directory before batch runs |
 | `batch_tracking_food.py` | Batch track food encounter experiments |
-| `batch_tracking_gpu_accel_food.py` | Same, GPU-accelerated |
+| `batch_tracking_gpu_accel_food.py` | Same, GPU-accelerated — auto-sizes batch to 80% of free VRAM |
 | `batch_tracking_opto.py` | Batch track optogenetics experiments |
 | `track_editor_food.py` | Manually correct food encounter tracks |
 | `track_editor_opto.py` | Manually correct opto tracks |
@@ -118,6 +118,7 @@ python3 launcher.py
 |---|---|
 | `merge_files.py` | Convert wide-format opto CSVs to long-format composite |
 | `bootstrap_opto.py` | Decay-recovery curve fitting with bootstrap bagging |
+| `bootstrap_opto_vectorized.py` | Vectorized bootstrap (faster on large datasets) |
 | `graph_viewer_opto.py` | Visualize bootstrap results |
 
 ---
