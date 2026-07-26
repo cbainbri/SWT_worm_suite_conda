@@ -30,22 +30,6 @@ git clone --recurse-submodules https://github.com/cbainbri/SWT_worm_suite_conda.
 
 **Mac / Linux prerequisites**
 
-> **Python / Tkinter**
->
-> **Mac:** The system Python shipped with macOS does not include Tkinter. The simplest fix is to install Python from [python.org](https://python.org) — the installer bundles Tkinter automatically. If you prefer Homebrew, install the version that matches your Python:
-> ```bash
-> brew install python-tk@3.11   # match your Python version (3.11, 3.12, etc.)
-> ```
->
-> **Linux:** Tkinter is often packaged separately from Python. Install it before running setup:
-> ```bash
-> # Debian / Ubuntu
-> sudo apt install python3-tk
->
-> # Fedora / RHEL
-> sudo dnf install python3-tkinter
-> ```
-
 > **AMD GPU (ROCm) — Linux only — install before running setup**
 >
 > ROCm must be on your system before `setup.py` runs, otherwise the AMD GPU option won't work. Skip this if you have NVIDIA, Apple Silicon, or no GPU.
@@ -76,9 +60,9 @@ git clone --recurse-submodules https://github.com/cbainbri/SWT_worm_suite_conda.
 ```
 python3 setup.py
 ```
-Opens a window, detects your GPU, then installs micromamba, creates the isolated `worm_suite` environment, and downloads the SAM model weights (~1.2 GB). Takes 10–20 minutes on first run.
+Detects your GPU and installs micromamba, creates the isolated `worm_suite` environment, and downloads the SAM model weights (~1.2 GB). Takes 10–20 minutes on first run.
 
-A confirmation dialog appears when setup completes successfully.
+Opens a GUI window if Tkinter is available; otherwise falls back to an interactive terminal prompt — no prerequisites either way.
 
 ### Every launch after that
 
