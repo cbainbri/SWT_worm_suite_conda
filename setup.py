@@ -298,10 +298,18 @@ def run_install(gpu: str):
                "pip", "install", "torch", "torchvision"]
     subprocess.run(cmd, check=True)
 
+    download_script = SUITE_DIR / "food_analysis" / "download_models.py"
+    if not download_script.exists():
+        print("\nInitializing submodules ...")
+        subprocess.run(
+            ["git", "submodule", "update", "--init", "--recursive"],
+            cwd=str(SUITE_DIR), check=True
+        )
+
     print("\nDownloading SAM model weights (~1.2 GB) ...")
     subprocess.run(
         [str(tool_path), "run", "-n", ENV_NAME,
-         "python", str(SUITE_DIR / "food_analysis" / "download_models.py")],
+         "python", str(download_script)],
         cwd=str(SUITE_DIR / "food_analysis"), check=True
     )
 
