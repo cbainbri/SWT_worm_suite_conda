@@ -14,8 +14,12 @@ import sys
 import tarfile
 import urllib.request
 from pathlib import Path
-import tkinter as tk
-from tkinter import messagebox, ttk
+try:
+    import tkinter as tk
+    from tkinter import messagebox, ttk
+    _HAS_TK = True
+except ModuleNotFoundError:
+    _HAS_TK = False
 
 SUITE_DIR = Path(__file__).resolve().parent
 ENV_NAME  = "worm_suite"
@@ -275,9 +279,10 @@ def run_install(gpu: str):
         )
         if result.returncode != 0:
             print("\nEnvironment creation failed — check output above.")
-            _root = tk.Tk(); _root.withdraw()
-            messagebox.showerror("Setup Failed", "Environment creation failed.\nCheck the terminal for details.")
-            _root.destroy()
+            if _HAS_TK:
+                _root = tk.Tk(); _root.withdraw()
+                messagebox.showerror("Setup Failed", "Environment creation failed.\nCheck the terminal for details.")
+                _root.destroy()
             sys.exit(1)
 
     print(f"\nInstalling PyTorch ({gpu}) ...")
@@ -304,23 +309,53 @@ def run_install(gpu: str):
     print("  Windows:    double-click windows_launch.bat")
     print("  Mac/Linux:  python3 launch.py")
 
-    _root = tk.Tk()
-    _root.withdraw()
-    messagebox.showinfo(
-        "Setup Complete — SWT Worm Suite",
-        "Installation successful!\n\n"
-        "To launch the suite:\n"
-        "  Windows:    double-click  windows_launch.bat\n"
-        "  Mac/Linux:  python3 launch.py"
-    )
-    _root.destroy()
+    if _HAS_TK:
+        _root = tk.Tk()
+        _root.withdraw()
+        messagebox.showinfo(
+            "Setup Complete — SWT Worm Suite",
+            "Installation successful!\n\n"
+            "To launch the suite:\n"
+            "  Windows:    double-click  windows_launch.bat\n"
+            "  Mac/Linux:  python3 launch.py"
+        )
+        _root.destroy()
+
+
+def cli_main(detected_gpu: str, tool_name: str | None, tool_path):
+    print("\nSWT Worm Suite — Local Setup")
+    print("=" * 50)
+    if tool_name:
+        print(f"Conda tool : {tool_name}  ({tool_path})")
+    else:
+        print("Conda tool : none found — micromamba will be installed automatically")
+    print(f"Detected   : {GPU_LABELS.get(detected_gpu, detected_gpu)}")
+    print()
+    for i, (value, label) in enumerate(GPU_OPTIONS, 1):
+        marker = " *" if value == detected_gpu else ""
+        print(f"  {i}. {label}{marker}")
+    print()
+    while True:
+        raw = input(f"Select GPU [1-{len(GPU_OPTIONS)}, default={detected_gpu}]: ").strip()
+        if raw == "":
+            gpu = detected_gpu
+            break
+        if raw.isdigit() and 1 <= int(raw) <= len(GPU_OPTIONS):
+            gpu = GPU_OPTIONS[int(raw) - 1][0]
+            break
+        print("  Invalid choice, try again.")
+    print()
+    run_install(gpu)
 
 
 def main():
     detected_gpu = detect_gpu()
     tool_path, tool_name = find_conda_tool()
-    app = SetupApp(detected_gpu, tool_name, tool_path)
-    app.mainloop()
+    if _HAS_TK:
+        app = SetupApp(detected_gpu, tool_name, tool_path)
+        app.mainloop()
+    else:
+        cli_main(detected_gpu, tool_name, tool_path)
 
 
 if __name__ == "__main__":
