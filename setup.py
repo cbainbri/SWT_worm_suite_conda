@@ -172,7 +172,9 @@ GPU_LABELS = {k: v for k, v in GPU_OPTIONS}
 
 # ─── UI ───────────────────────────────────────────────────────────────────────
 
-class SetupApp(tk.Tk):
+_TkBase = tk.Tk if _HAS_TK else object
+
+class SetupApp(_TkBase):
     def __init__(self, detected_gpu: str, found_tool: str | None, tool_path: Path | None):
         super().__init__()
         self.title("SWT Worm Suite — Local Setup")
