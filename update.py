@@ -16,9 +16,14 @@ def run(cmd, **kwargs):
 
 
 def main():
-    print("Checking for updates to tracking, food_analysis, opto_analysis ...")
+    print("Pulling latest parent repo ...")
+    result = run(["git", "pull"])
+    if result.returncode != 0:
+        print("\nFailed to pull parent repo — make sure you have internet access.")
+        sys.exit(1)
 
-    result = run(["git", "submodule", "update", "--remote"])
+    print("Checking for updates to tracking, food_analysis, opto_analysis ...")
+    result = run(["git", "submodule", "update", "--remote", "--init"])
     if result.returncode != 0:
         print("\nUpdate failed — make sure you have internet access and the source repos are reachable.")
         sys.exit(1)
