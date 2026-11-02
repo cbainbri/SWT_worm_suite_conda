@@ -86,12 +86,13 @@ python3 launcher.py
 | `batch_tracking_opto.py` | Batch track optogenetics experiments |
 | `track_editor_food.py` | Manually correct food encounter tracks |
 | `track_editor_opto.py` | Manually correct opto tracks |
+| `prep_track_data.py` | Collect each experiment folder's finished track file into one folder as `PC#_<folder name>.csv` |
+| `merge_files.py` | Convert wide-format CSVs (food or opto) to the long-format `composite.csv` |
 
 ### Food Encounter Analysis
 | Script | Purpose |
 |---|---|
 | `automatic_mask_borders.py` | Draw or auto-generate food mask using SAM |
-| `merge_files.py` | Convert wide-format CSVs to long-format composite |
 | `bootstrap_food.py` | Richards curve fitting with bootstrap bagging |
 | `bootstrap_food_vectorized.py` | Vectorized bootstrap (faster on large datasets) |
 | `permutation_food.py` | Permutation testing on bootstrap results |
@@ -100,7 +101,6 @@ python3 launcher.py
 ### Opto Analysis
 | Script | Purpose |
 |---|---|
-| `merge_files.py` | Convert wide-format opto CSVs to long-format composite |
 | `bootstrap_opto.py` | Decay-recovery curve fitting with bootstrap bagging |
 | `bootstrap_opto_vectorized.py` | Vectorized bootstrap (faster on large datasets) |
 | `permutation_opto.py` | Permutation testing on bootstrap results |
