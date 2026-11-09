@@ -4,6 +4,7 @@ SWT Worm Suite — Update
 Pulls the latest scripts from all three source repos (tracking, food_analysis, opto_analysis).
     python update.py
 """
+from __future__ import annotations
 import subprocess
 import sys
 from pathlib import Path

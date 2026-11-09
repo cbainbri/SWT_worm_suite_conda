@@ -3,6 +3,7 @@
 SWT Worm Suite — Unified Launcher
 Run: python launcher.py
 """
+from __future__ import annotations
 import os
 import sys
 import subprocess
@@ -154,11 +155,13 @@ CATEGORIES = [
         ("Batch Tracking — Opto",                           SUITE_DIR / "tracking" / "batch_tracking_opto.py"),
         ("Track Editor — Food",                             SUITE_DIR / "tracking" / "track_editor_food.py"),
         ("Track Editor — Opto",                             SUITE_DIR / "tracking" / "track_editor_opto.py"),
+    ]),
+    ("Analysis Prep", [
         ("Prep Track Data  (collect finished tracks, add PC#)", SUITE_DIR / "tracking" / "prep_track_data.py"),
+        ("Mask Border — Food Encounter",                    SUITE_DIR / "food_analysis" / "automatic_mask_borders.py"),
         ("Merge Files  (wide → long composite.csv)",        SUITE_DIR / "tracking" / "merge_files.py"),
     ]),
     ("Food Encounter Analysis", [
-        ("Mask Borders",                SUITE_DIR / "food_analysis" / "automatic_mask_borders.py"),
         ("Bootstrap",                   SUITE_DIR / "food_analysis" / "bootstrap_food.py"),
         ("Bootstrap (Vectorized)",      SUITE_DIR / "food_analysis" / "bootstrap_food_vectorized.py"),
         ("Permutation Testing",         SUITE_DIR / "food_analysis" / "permutation_food.py"),

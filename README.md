@@ -62,7 +62,11 @@ python3 setup.py
 ```
 Detects your GPU and installs micromamba, creates the isolated `worm_suite` environment, and downloads the SAM model weights (~1.2 GB). Takes 10–20 minutes on first run.
 
-Opens a GUI window if Tkinter is available; otherwise falls back to an interactive terminal prompt — no prerequisites either way.
+> **macOS:** No Python download needed — the `python3` that comes with Xcode Command Line Tools (installed in the Clone step above) is all `setup.py` needs. The suite itself runs on the newer Python inside the `worm_suite` environment that setup creates.
+>
+> Because Apple's built-in Python ships an outdated Tk that can't draw windows on recent macOS, setup runs as a terminal prompt on a Mac: pick your GPU by number, or press Enter to accept the detected one. You may see a `DEPRECATION WARNING: The system version of Tk is deprecated` message first — it's harmless.
+
+Opens a GUI window if a working Tkinter is available; otherwise falls back to an interactive terminal prompt — no prerequisites either way. To force the terminal prompt on any system, run `python3 setup.py --cli`.
 
 ### Every launch after that
 
@@ -72,6 +76,7 @@ Opens a GUI window if Tkinter is available; otherwise falls back to an interacti
 ```
 python3 launcher.py
 ```
+Any `python3` works here, including the built-in macOS one — the launcher automatically switches itself into the `worm_suite` environment before opening its window.
 
 ---
 
@@ -86,13 +91,17 @@ python3 launcher.py
 | `batch_tracking_opto.py` | Batch track optogenetics experiments |
 | `track_editor_food.py` | Manually correct food encounter tracks |
 | `track_editor_opto.py` | Manually correct opto tracks |
+
+### Analysis Prep
+| Script | Purpose |
+|---|---|
 | `prep_track_data.py` | Collect each experiment folder's finished track file into one folder as `PC#_<folder name>.csv` |
+| `automatic_mask_borders.py` | Food encounter only: draw or auto-generate the food mask using SAM (do this before merging) |
 | `merge_files.py` | Convert wide-format CSVs (food or opto) to the long-format `composite.csv` |
 
 ### Food Encounter Analysis
 | Script | Purpose |
 |---|---|
-| `automatic_mask_borders.py` | Draw or auto-generate food mask using SAM |
 | `bootstrap_food.py` | Richards curve fitting with bootstrap bagging |
 | `bootstrap_food_vectorized.py` | Vectorized bootstrap (faster on large datasets) |
 | `permutation_food.py` | Permutation testing on bootstrap results |

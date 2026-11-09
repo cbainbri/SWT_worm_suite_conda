@@ -6,6 +6,7 @@ worm_suite environment, and downloads SAM weights.
 Run once:
     python setup.py
 """
+from __future__ import annotations
 import io
 import os
 import platform
@@ -20,6 +21,12 @@ try:
     _HAS_TK = True
 except ModuleNotFoundError:
     _HAS_TK = False
+
+# Apple's system Python ships Tk 8.5, which often shows a blank/no window on
+# modern macOS — use the terminal flow there (or whenever --cli is passed).
+_OLD_MAC_TK = (_HAS_TK and platform.system() == "Darwin"
+               and float(tk.TkVersion) < 8.6)
+_USE_GUI = _HAS_TK and not _OLD_MAC_TK and "--cli" not in sys.argv
 
 SUITE_DIR = Path(__file__).resolve().parent
 ENV_NAME  = "worm_suite"
@@ -281,7 +288,7 @@ def run_install(gpu: str):
         )
         if result.returncode != 0:
             print("\nEnvironment creation failed — check output above.")
-            if _HAS_TK:
+            if _USE_GUI:
                 _root = tk.Tk(); _root.withdraw()
                 messagebox.showerror("Setup Failed", "Environment creation failed.\nCheck the terminal for details.")
                 _root.destroy()
@@ -289,7 +296,14 @@ def run_install(gpu: str):
 
     print(f"\nInstalling PyTorch ({gpu}) ...")
     torch_url = TORCH_URLS.get(gpu)
-    if torch_url:
+    if sys.platform == "darwin":
+        # macOS: use conda-forge PyTorch. The pip wheel bundles its own
+        # libomp.dylib, which clashes with conda-forge's llvm-openmp (used by
+        # numpy/scikit-learn) and aborts with "OMP: Error #15 ... libomp.dylib
+        # already initialized". The conda-forge build shares the env's copy.
+        cmd = [str(tool_path), "install", "-n", ENV_NAME, "-c", "conda-forge",
+               "-y", "pytorch>=2.5", "torchvision"]
+    elif torch_url:
         cmd = [str(tool_path), "run", "-n", ENV_NAME,
                "pip", "install", "torch", "torchvision",
                "--index-url", torch_url]
@@ -317,9 +331,9 @@ def run_install(gpu: str):
     print(f"Setup complete! (used: {tool_name})")
     print("\nTo launch:")
     print("  Windows:    double-click windows_launch.bat")
-    print("  Mac/Linux:  python3 launch.py")
+    print("  Mac/Linux:  python3 launcher.py")
 
-    if _HAS_TK:
+    if _USE_GUI:
         _root = tk.Tk()
         _root.withdraw()
         messagebox.showinfo(
@@ -327,7 +341,7 @@ def run_install(gpu: str):
             "Installation successful!\n\n"
             "To launch the suite:\n"
             "  Windows:    double-click  windows_launch.bat\n"
-            "  Mac/Linux:  python3 launch.py"
+            "  Mac/Linux:  python3 launcher.py"
         )
         _root.destroy()
 
@@ -361,7 +375,7 @@ def cli_main(detected_gpu: str, tool_name: str | None, tool_path):
 def main():
     detected_gpu = detect_gpu()
     tool_path, tool_name = find_conda_tool()
-    if _HAS_TK:
+    if _USE_GUI:
         app = SetupApp(detected_gpu, tool_name, tool_path)
         app.mainloop()
     else:
