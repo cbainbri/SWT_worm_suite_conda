@@ -34,3 +34,8 @@ CLAUDE.md
 # OS
 .DS_Store
 Thumbs.db
+
+# Per-OS launcher written into the suite folder by Setup (see setup/setup.py)
+/Windows_launcher.bat
+/Mac_launcher.command
+/Linux_launcher.sh

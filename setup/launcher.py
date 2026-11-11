@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 SWT Worm Suite — Unified Launcher
-Run: python launcher.py
+Run: python3 setup/launcher.py   (or the <OS>_launcher file setup puts in the suite folder)
 """
 from __future__ import annotations
 import os
@@ -75,19 +75,21 @@ if os.environ.get("CONDA_DEFAULT_ENV") != "worm_suite":
     if not _tool:
         _show_error(
             "No conda tool found (micromamba, mamba, or conda).\n\n"
-            "Run setup.py first to set up the worm_suite environment.")
+            "Run Setup first (Setup.bat / Setup.command / Setup.sh in the suite folder)\n"
+            "to set up the worm_suite environment.")
         sys.exit(1)
 
     if "worm_suite" not in subprocess.run(
             [_tool, "env", "list"], capture_output=True, text=True).stdout:
         _show_error(
             "The worm_suite environment has not been created yet.\n\n"
-            "Run setup.py first.")
+            "Run Setup first (Setup.bat / Setup.command / Setup.sh in the suite folder).")
         sys.exit(1)
 
     os.execvp(_tool, [_tool, "run", "-n", "worm_suite", "python"] + sys.argv)
 
-_GPU_CACHE = Path(__file__).resolve().parent / '.gpu_config'
+# This file lives in <suite>/setup/; the suite root is one level up.
+_GPU_CACHE = Path(__file__).resolve().parent.parent / '.gpu_config'
 # GFX versions compiled into PyTorch ROCm wheels, newest first
 _GFX_CANDIDATES = ['11.0.2', '11.0.0', '10.3.0', '9.4.0', '9.0.10', '9.0.6']
 _GPU_PROBE = (
@@ -145,7 +147,7 @@ _set_hsa_override()
 import tkinter as tk
 from tkinter import ttk, messagebox
 
-SUITE_DIR = Path(__file__).resolve().parent
+SUITE_DIR = Path(__file__).resolve().parent.parent  # <suite>/setup/launcher.py -> <suite>
 
 CATEGORIES = [
     ("Tracking Pipeline", [

@@ -3,8 +3,16 @@
 SWT Worm Suite (conda) — Setup
 Finds or installs a conda tool (micromamba / mamba / conda), creates the
 worm_suite environment, and downloads SAM weights.
-Run once:
-    python setup.py
+Run once, via the Setup file for your OS in the suite folder:
+    Windows: Setup.bat      Mac: Setup.command      Linux: ./Setup.sh
+(or directly: python3 setup/setup.py)
+
+On success it writes a launcher for this OS into the suite folder
+(Windows_launcher.bat / Mac_launcher.command / Linux_launcher.sh).
+
+Options:
+    --cli            terminal prompts instead of the GUI window
+    --launcher-only  only (re)create that launcher; skip the install
 """
 from __future__ import annotations
 import io
@@ -28,7 +36,7 @@ _OLD_MAC_TK = (_HAS_TK and platform.system() == "Darwin"
                and float(tk.TkVersion) < 8.6)
 _USE_GUI = _HAS_TK and not _OLD_MAC_TK and "--cli" not in sys.argv
 
-SUITE_DIR = Path(__file__).resolve().parent
+SUITE_DIR = Path(__file__).resolve().parent.parent  # <suite>/setup/setup.py -> <suite>
 ENV_NAME  = "worm_suite"
 
 # ─── Conda tool detection ─────────────────────────────────────────────────────
@@ -261,6 +269,54 @@ class SetupApp(_TkBase):
         self.destroy()
         run_install(gpu)
 
+# ─── Root launcher ────────────────────────────────────────────────────────────
+# Setup writes ONE small launcher for the current OS into the suite folder.
+# It only calls the real launcher in setup/, so it never goes stale when the
+# code is updated. These file names are listed in .gitignore.
+
+ROOT_LAUNCHERS = {
+    "Windows": ("Windows_launcher.bat",
+        "@echo off\n"
+        ":: Created by Setup. Double-click to launch the SWT Worm Suite.\n"
+        ":: The real launcher lives in setup\\ -- this file just calls it.\n"
+        'call "%~dp0setup\\windows_launch.bat" %*\n'),
+    "Darwin": ("Mac_launcher.command",
+        "#!/bin/bash\n"
+        "# Created by Setup. Double-click to launch the SWT Worm Suite.\n"
+        "# The real launcher lives in setup/ -- this file just calls it.\n"
+        'exec /bin/bash "$(dirname "$0")/setup/mac_launch.command" "$@"\n'),
+    "Linux": ("Linux_launcher.sh",
+        "#!/usr/bin/env bash\n"
+        "# Created by Setup. Run ./Linux_launcher.sh to launch the SWT Worm Suite.\n"
+        "# The real launcher lives in setup/ -- this file just calls it.\n"
+        'cd "$(dirname "$0")" || exit 1\n'
+        'exec python3 setup/launcher.py "$@"\n'),
+}
+
+
+def root_launcher_name() -> str:
+    return ROOT_LAUNCHERS.get(platform.system(), ROOT_LAUNCHERS["Linux"])[0]
+
+
+def write_root_launcher() -> Path:
+    """Write this OS's launcher into the suite folder (executable on Mac/Linux)."""
+    name, body = ROOT_LAUNCHERS.get(platform.system(), ROOT_LAUNCHERS["Linux"])
+    dest = SUITE_DIR / name
+    with open(dest, "w", newline="\r\n" if name.endswith(".bat") else "\n") as fh:
+        fh.write(body)
+    if not name.endswith(".bat"):
+        os.chmod(dest, 0o755)
+    print(f"\nLauncher created: {dest}")
+    return dest
+
+
+def launch_hint() -> str:
+    name = root_launcher_name()
+    if name.endswith(".sh"):
+        return f"run  ./{name}  in the suite folder"
+    return f"double-click  {name}  in the suite folder"
+
+
 # ─── Install ──────────────────────────────────────────────────────────────────
 
 def run_install(gpu: str):
@@ -327,11 +383,11 @@ def run_install(gpu: str):
         cwd=str(SUITE_DIR / "food_analysis"), check=True
     )
 
+    write_root_launcher()
+
     print("\n" + "=" * 50)
     print(f"Setup complete! (used: {tool_name})")
-    print("\nTo launch:")
-    print("  Windows:    double-click windows_launch.bat")
-    print("  Mac/Linux:  python3 launcher.py")
+    print(f"\nTo launch: {launch_hint()}")
 
     if _USE_GUI:
         _root = tk.Tk()
@@ -339,9 +395,7 @@ def run_install(gpu: str):
         messagebox.showinfo(
             "Setup Complete — SWT Worm Suite",
             "Installation successful!\n\n"
-            "To launch the suite:\n"
-            "  Windows:    double-click  windows_launch.bat\n"
-            "  Mac/Linux:  python3 launcher.py"
+            f"To launch the suite: {launch_hint()}"
         )
         _root.destroy()
 
@@ -373,6 +427,11 @@ def cli_main(detected_gpu: str, tool_name: str | None, tool_path):
 
 
 def main():
+    if "--launcher-only" in sys.argv:
+        # Recreate the root launcher without touching the environment.
+        write_root_launcher()
+        print(f"To launch: {launch_hint()}")
+        return
     detected_gpu = detect_gpu()
     tool_path, tool_name = find_conda_tool()
     if _USE_GUI:

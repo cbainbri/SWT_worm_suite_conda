@@ -2,14 +2,14 @@
 """
 SWT Worm Suite — Update
 Pulls the latest scripts from all three source repos (tracking, food_analysis, opto_analysis).
-    python update.py
+    python3 setup/update.py      (Windows: setup\windows_update.bat)
 """
 from __future__ import annotations
 import subprocess
 import sys
 from pathlib import Path
 
-SUITE_DIR = Path(__file__).resolve().parent
+SUITE_DIR = Path(__file__).resolve().parent.parent  # <suite>/setup/update.py -> <suite>
 
 
 def run(cmd, cwd=None, **kwargs):

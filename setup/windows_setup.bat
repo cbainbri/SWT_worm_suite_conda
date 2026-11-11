@@ -108,7 +108,8 @@ if not errorlevel 1 (
 echo No Python found in base environment (micromamba install detected^).
 echo Creating worm_suite environment first -- this takes 5-15 minutes...
 echo.
-"%CONDA_EXE%" env create -f "%~dp0environment.yml" -y
+:: environment.yml lives in the suite folder, one level above setup\
+"%CONDA_EXE%" env create -f "%~dp0..\environment.yml" -y
 if errorlevel 1 (
     echo.
     echo Environment creation failed -- check the output above.
@@ -122,7 +123,8 @@ echo.
 echo Starting setup wizard (using %RUN_ENV% environment^)...
 echo (A window will appear -- keep this terminal open until setup completes^)
 echo.
-"%CONDA_EXE%" run -n %RUN_ENV% python "%~dp0setup.py"
+:: %* passes options through, e.g. Setup.bat --launcher-only
+"%CONDA_EXE%" run -n %RUN_ENV% python "%~dp0setup.py" %*
 
 if errorlevel 1 (
     echo.

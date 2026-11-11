@@ -22,9 +22,19 @@ git clone --recurse-submodules https://github.com/cbainbri/SWT_worm_suite_conda.
 
 ### Install (first time only)
 
-**Windows** — double-click `windows_setup.bat`
+The suite folder has one Setup file per OS. Each just runs the real setup scripts in `setup/`:
 
-> No prerequisites. If Miniconda is not already installed, `windows_setup.bat` downloads and installs it automatically (~100 MB, one-time). It then opens the setup wizard to configure your environment.
+| OS | Run |
+|---|---|
+| Windows | double-click `Setup.bat` |
+| Mac | double-click `Setup.command` (or `./Setup.command` in a terminal) |
+| Linux | `./Setup.sh` in a terminal (or `bash Setup.sh`) |
+
+When setup succeeds it puts **one launcher for your OS** in the suite folder (`Windows_launcher.bat`, `Mac_launcher.command` or `Linux_launcher.sh`). That's the file you use from then on.
+
+**Windows** — double-click `Setup.bat`
+
+> No prerequisites. If Miniconda is not already installed, setup downloads and installs it automatically (~100 MB, one-time). It then opens the setup wizard to configure your environment.
 >
 > **Note:** Windows has a known issue where typing `python` in a plain Command Prompt opens the Microsoft Store instead of running Python. The `.bat` launchers in this project bypass that problem entirely — you never need to type `python` in a terminal on Windows.
 
@@ -32,7 +42,7 @@ git clone --recurse-submodules https://github.com/cbainbri/SWT_worm_suite_conda.
 
 > **AMD GPU (ROCm) — Linux only — install before running setup**
 >
-> ROCm must be on your system before `setup.py` runs, otherwise the AMD GPU option won't work. Skip this if you have NVIDIA, Apple Silicon, or no GPU.
+> ROCm must be on your system before setup runs, otherwise the AMD GPU option won't work. Skip this if you have NVIDIA, Apple Silicon, or no GPU.
 >
 > **Ubuntu / Debian:**
 > ```bash
@@ -56,27 +66,35 @@ git clone --recurse-submodules https://github.com/cbainbri/SWT_worm_suite_conda.
 >
 > For current ROCm install instructions see: https://rocm.docs.amd.com/en/latest/deploy/linux/
 
-**Mac / Linux** — run in a terminal:
+**Mac** — double-click `Setup.command`. **Linux** — run in a terminal:
 ```
-python3 setup.py
+./Setup.sh
 ```
 Detects your GPU and installs micromamba, creates the isolated `worm_suite` environment, and downloads the SAM model weights (~1.2 GB). Takes 10–20 minutes on first run.
 
-> **macOS:** No Python download needed — the `python3` that comes with Xcode Command Line Tools (installed in the Clone step above) is all `setup.py` needs. The suite itself runs on the newer Python inside the `worm_suite` environment that setup creates.
+> **macOS:** No Python download needed — the `python3` that comes with Xcode Command Line Tools (installed in the Clone step above) is all setup needs. The suite itself runs on the newer Python inside the `worm_suite` environment that setup creates.
 >
 > Because Apple's built-in Python ships an outdated Tk that can't draw windows on recent macOS, setup runs as a terminal prompt on a Mac: pick your GPU by number, or press Enter to accept the detected one. You may see a `DEPRECATION WARNING: The system version of Tk is deprecated` message first — it's harmless.
 
-Opens a GUI window if a working Tkinter is available; otherwise falls back to an interactive terminal prompt — no prerequisites either way. To force the terminal prompt on any system, run `python3 setup.py --cli`.
+Opens a GUI window if a working Tkinter is available; otherwise falls back to an interactive terminal prompt — no prerequisites either way. To force the terminal prompt on any system, add `--cli` (e.g. `./Setup.sh --cli`).
 
 ### Every launch after that
 
-**Windows:** double-click `windows_launch.bat`
+| OS | Run |
+|---|---|
+| Windows | double-click `Windows_launcher.bat` |
+| Mac | double-click `Mac_launcher.command` |
+| Linux | `./Linux_launcher.sh` |
 
-**Mac/Linux:**
-```
-python3 launcher.py
-```
-Any `python3` works here, including the built-in macOS one — the launcher automatically switches itself into the `worm_suite` environment before opening its window.
+These files are created by setup (and ignored by git). They only call the real launcher, `setup/launcher.py`, so updates reach them automatically. You can also run `python3 setup/launcher.py` directly — any `python3` works, including the built-in macOS one, because the launcher switches itself into the `worm_suite` environment before opening its window.
+
+**Launcher missing?** (e.g. after pulling this layout onto an existing install, or if you deleted it) — recreate it without reinstalling anything:
+
+| OS | Run |
+|---|---|
+| Windows | `Setup.bat --launcher-only` |
+| Mac | `./Setup.command --launcher-only` |
+| Linux | `./Setup.sh --launcher-only` |
 
 ---
 
@@ -122,8 +140,9 @@ Any `python3` works here, including the built-in macOS one — the launcher auto
 The `tracking/`, `food_analysis/`, and `opto_analysis/` directories are git submodules pointing to their own source repos. To pull the latest scripts from all three at once, run:
 
 ```
-python update.py
+python3 setup/update.py
 ```
+(Windows: double-click `setup\windows_update.bat`.)
 
 Or run the git command directly:
 
@@ -142,8 +161,8 @@ All scripts run through the isolated `worm_suite` conda environment — never yo
 - GPU acceleration works directly with your installed drivers
 - Works on Windows, Mac (Intel + Apple Silicon), and Linux
 
-**Windows** uses Miniconda (installed by `windows_setup.bat`) to manage the environment.
-**Mac/Linux** uses micromamba (installed automatically by `setup.py`).
+**Windows** uses Miniconda (installed by `Setup.bat`) to manage the environment.
+**Mac/Linux** uses micromamba (installed automatically by setup).
 Both produce the same isolated `worm_suite` environment.
 
 ## GPU
@@ -151,13 +170,13 @@ Both produce the same isolated `worm_suite` environment.
 Selected during setup. To switch GPU type later, just run setup again — it reinstalls torch without recreating the full environment.
 
 ### NVIDIA (CUDA)
-Drivers installed normally via your OS or nvidia.com. `setup.py` handles the rest.
+Drivers installed normally via your OS or nvidia.com. Setup handles the rest.
 
 ### Apple Silicon (MPS)
 No extra steps — Metal is built into macOS.
 
 ### AMD (ROCm) — Linux only
-Install ROCm before running setup — see the [AMD GPU prerequisite block](#install-first-time-only) in the Install section above. After ROCm is installed, run `python3 setup.py` and select **AMD GPU (ROCm)**. PyTorch exposes ROCm through the same CUDA API — `torch.cuda.is_available()` returns `True` on a working ROCm system.
+Install ROCm before running setup — see the [AMD GPU prerequisite block](#install-first-time-only) in the Install section above. After ROCm is installed, run `./Setup.sh` and select **AMD GPU (ROCm)**. PyTorch exposes ROCm through the same CUDA API — `torch.cuda.is_available()` returns `True` on a working ROCm system.
 
 > ROCm is not part of Mesa. Mesa handles display/rendering and is already on your system. ROCm is a separate compute stack.
 

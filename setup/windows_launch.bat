@@ -35,7 +35,7 @@ if not defined CONDA_EXE (
 if not defined CONDA_EXE (
     echo ERROR: conda / mamba / micromamba not found.
     echo Please install Miniconda from https://docs.conda.io/en/latest/miniconda.html
-    echo Then run setup.py from the Miniconda Prompt.
+    echo Then run Setup.bat in the suite folder.
     pause
     exit /b 1
 )
@@ -44,8 +44,8 @@ if not defined CONDA_EXE (
 "%CONDA_EXE%" run -n worm_suite python "%~dp0launcher.py"
 if errorlevel 1 (
     echo.
-    echo Something went wrong. Make sure you ran windows_setup.bat first.
-    echo If the worm_suite environment is missing, run windows_setup.bat again.
+    echo Something went wrong. Make sure you ran Setup.bat first.
+    echo If the worm_suite environment is missing, run Setup.bat again.
     pause
 )
 
