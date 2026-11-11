@@ -105,7 +105,7 @@ These files are created by setup (and ignored by git). They only call the real l
 |---|---|
 | `track_preview.py` | Tune tracking parameters on a single directory before batch runs |
 | `batch_tracking_food.py` | Batch track food encounter experiments |
-| `batch_tracking_gpu_accel_food.py` | Same, GPU-accelerated — auto-sizes batch to 80% of free VRAM |
+| `batch_tracking_gpu_accel_food.py` | Experimental GPU version for benchmarking; writes `tracks_debug.csv` instead of `tracks.csv` |
 | `batch_tracking_opto.py` | Batch track optogenetics experiments |
 | `track_editor_food.py` | Manually correct food encounter tracks |
 | `track_editor_opto.py` | Manually correct opto tracks |
@@ -113,8 +113,8 @@ These files are created by setup (and ignored by git). They only call the real l
 ### Analysis Prep
 | Script | Purpose |
 |---|---|
-| `prep_track_data.py` | Collect each experiment folder's finished track file into one folder as `PC#_<folder name>.csv` |
 | `automatic_mask_borders.py` | Food encounter only: draw or auto-generate the food mask using SAM (do this before merging) |
+| `prep_track_data.py` | Collect each experiment folder's finished track file into one folder as `PC#_<folder name>.csv` |
 | `merge_files.py` | Convert wide-format CSVs (food or opto) to the long-format `composite.csv` |
 
 ### Food Encounter Analysis

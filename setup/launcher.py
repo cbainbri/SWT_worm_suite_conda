@@ -153,14 +153,14 @@ CATEGORIES = [
     ("Tracking Pipeline", [
         ("Track Preview  (tune params on single directory)", SUITE_DIR / "tracking" / "track_preview.py"),
         ("Batch Tracking — Food",                            SUITE_DIR / "tracking" / "batch_tracking_food.py"),
-        ("Batch Tracking — Food (GPU)",                     SUITE_DIR / "tracking" / "batch_tracking_gpu_accel_food.py"),
+        ("Batch Tracking — Food (GPU, experimental)",       SUITE_DIR / "tracking" / "batch_tracking_gpu_accel_food.py"),
         ("Batch Tracking — Opto",                           SUITE_DIR / "tracking" / "batch_tracking_opto.py"),
         ("Track Editor — Food",                             SUITE_DIR / "tracking" / "track_editor_food.py"),
         ("Track Editor — Opto",                             SUITE_DIR / "tracking" / "track_editor_opto.py"),
     ]),
     ("Analysis Prep", [
-        ("Prep Track Data  (collect finished tracks, add PC#)", SUITE_DIR / "tracking" / "prep_track_data.py"),
         ("Mask Border — Food Encounter",                    SUITE_DIR / "food_analysis" / "automatic_mask_borders.py"),
+        ("Prep Track Data  (collect finished tracks, add PC#)", SUITE_DIR / "tracking" / "prep_track_data.py"),
         ("Merge Files  (wide → long composite.csv)",        SUITE_DIR / "tracking" / "merge_files.py"),
     ]),
     ("Food Encounter Analysis", [
